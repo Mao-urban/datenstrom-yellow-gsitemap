@@ -7,7 +7,7 @@ class YellowGsitemap {
     
     public function onLoad($yellow) {
         $this->yellow = $yellow;
-        $this->yellow->system->setDefault("Gsitemap","/gsitemap"); //create a page or directory for this
+        $this->yellow->system->setDefault("Gsitemap","/gsitemap/"); //create a page or directory for this
         $this->yellow->system->setDefault("GsitemapTxt","/gsitemap.txt");
     }
 
