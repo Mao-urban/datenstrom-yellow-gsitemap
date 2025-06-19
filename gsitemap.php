@@ -1,30 +1,55 @@
 <?php
-// Sitemap extension, https://github.com/annaesvensson/yellow-sitemap
 
 class YellowGsitemap {
-    const VERSION = "0.3";
-    public $yellow;         // access to API
+    const VERSION = "0.6";
+    public $yellow;         
     
-    // Handle initialisation
+    
     public function onLoad($yellow) {
         $this->yellow = $yellow;
+        $this->yellow->system->setDefault("Gsitemap","/gsitemap"); //create a page or directory for this
+        $this->yellow->system->setDefault("GsitemapTxt","/gsitemap.txt");
     }
 
-    // Handle page layout
      public function onParsePageOutput($page, $text) {
-        if ($page->get("location") == "/gsitemap.txt") {
+        if ($page->getLocation() == $this->yellow->system->get("Gsitemap")) {
             $output = "";
-            foreach ($this->yellow->pages->index() as $p) {
+            $pages = $this->yellow->content->index(false, false);
+            foreach ($pages as $p) {
                 if (!$p->isAvailable() || $p->get("status") == "draft") continue;
-                $output .= $p->location(true) . "\n";
+                $output .= $p->getUrl() . "\n";
             }
-            $page->setLastModified($this->yellow->pages->getModified());
-            $this->yellow->page->setHeader("Content-Type: text/plain; charset=utf-8");
-            $page->setOutput($output);
-            return false; // Prevents the rest of the page rendering
+            $page->setLastModified($pages->getModified());
+            $this->yellow->page->setHeader("Content-Type:","text/plain; charset=utf-8");
+            $text = $output;
         }
 
         return $text; // Default behavior for all other pages
     }
-    }
     
+    public function onRequest($scheme, $host, $base, $location, $file) {
+        
+        if ($location == $this->yellow->system->get("GsitemapTxt")) {
+
+            $pages = $this->yellow->content->index(false, false);
+            $output = "";
+            foreach ($pages as $p) {
+                if (!$p->isAvailable() || $p->get("status") == "draft") continue;
+                $output .= $p->getUrl() . "\n";
+            }
+            $this->yellow->page->set("layout", "none");
+            $this->yellow->page->set("type", "text");
+            $this->yellow->page->setLastModified($pages->getModified());
+            $this->yellow->page->setHeader("Content-Type", "text/plain; charset=utf-8");
+            $this->yellow->page->setOutput($output);
+            header("Content-Type: text/plain; charset=utf-8");
+            echo $output;
+            return true;
+        }
+
+     return false;
+    }
+
+
+
+}
