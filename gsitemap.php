@@ -28,6 +28,14 @@ class YellowGsitemap {
     }
     
     public function onRequest($scheme, $host, $base, $location, $file) {
+        if (preg_match("#^(.*)\.html$#", $location, $matches)) {
+            $cleanLocation = $matches[1];
+            if ($this->yellow->lookup->isFileLocation($cleanLocation)){
+                $out = $this->yellow->lookup->normaliseUrl($scheme, $host, $base, $cleanLocation, $filterStrict = true);
+            }
+            $statusCode = $this->yellow->sendStatus(303, $out);
+            return $statusCode;
+        }
         
         if ($location == $this->yellow->system->get("GsitemapTxt")) {
 
