@@ -43,7 +43,7 @@ class YellowGsitemap {
             $output = "";
             foreach ($pages as $p) {
                 if (!$p->isAvailable() || $p->get("status") == "draft") continue;
-                $output .= $p->getUrl() . "\n";
+                $output .= $p->getUrl() . "\n"; //. ".html\n"   // // add this to line when needed html ending 
             }
             $this->yellow->page->set("layout", "none");
             $this->yellow->page->set("type", "text");
