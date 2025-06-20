@@ -43,7 +43,7 @@ class YellowGsitemap {
             $output = "";
             foreach ($pages as $p) {
                 if (!$p->isAvailable() || $p->get("status") == "draft") continue;
-                $output .= $p->getUrl() . "\n"; //. ".html\n"   // // add this to line when needed html ending 
+                $output .= rtrim($p->getUrl(), '/') . "\n"; //. ".html\n"   // // add this to line when needed html ending 
             }
             $output = mb_convert_encoding($output, 'UTF-8', 'auto');
             $output = ltrim($output, "\xEF\xBB\xBF");
