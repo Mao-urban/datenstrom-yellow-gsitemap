@@ -1,7 +1,7 @@
 <?php
 
 class YellowGsitemap {
-    const VERSION = "0.6";
+    const VERSION = "1.0";
     public $yellow;         
     
     
@@ -45,13 +45,22 @@ class YellowGsitemap {
                 if (!$p->isAvailable() || $p->get("status") == "draft") continue;
                 $output .= $p->getUrl() . "\n"; //. ".html\n"   // // add this to line when needed html ending 
             }
+            $output = mb_convert_encoding($output, 'UTF-8', 'auto');
+            $output = ltrim($output, "\xEF\xBB\xBF");
+
+    // Start buffering to avoid premature output
+            ob_start();
             $this->yellow->page->set("layout", "none");
             $this->yellow->page->set("type", "text");
             $this->yellow->page->setLastModified($pages->getModified());
             $this->yellow->page->setHeader("Content-Type", "text/plain; charset=utf-8");
             $this->yellow->page->setOutput($output);
             header("Content-Type: text/plain; charset=utf-8");
+            header("Content-Length: " . strlen($output));
+            header("Connection: close");
             echo $output;
+
+            ob_end_flush(); // Send it all at once
             return true;
         }
 
